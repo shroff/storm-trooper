@@ -1,8 +1,8 @@
 # The name of your project (used to name the compiled .hex file)
 TARGET = $(notdir $(CURDIR))
 
-# The teensy version to use, 30, 31, or LC
-TEENSY = 30
+# The teensy version to use, 30, 31, 32, or LC
+TEENSY = 32
 
 # Set to 24000000, 48000000, or 96000000 to set CPU core speed
 TEENSY_CORE_SPEED = 48000000
@@ -69,7 +69,7 @@ ifeq ($(TEENSY), 30)
     LDSCRIPT = $(COREPATH)/mk20dx128.ld
     LDFLAGS += -mcpu=cortex-m4 -T$(LDSCRIPT)
 else
-    ifeq ($(TEENSY), 31)
+    ifeq ($(TEENSY),$(filter $(TEENSY),31 32))
         CPPFLAGS += -D__MK20DX256__ -mcpu=cortex-m4
         LDSCRIPT = $(COREPATH)/mk20dx256.ld
         LDFLAGS += -mcpu=cortex-m4 -T$(LDSCRIPT)
