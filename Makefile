@@ -25,21 +25,15 @@ BUILDDIR = $(abspath $(CURDIR)/build)
 
 # path location for Teensy Loader, teensy_post_compile and teensy_reboot
 TOOLSPATH = $(CURDIR)/tools
-
-ifeq ($(OS),Windows_NT)
-    $(error What is Win Dose?)
-else
-    UNAME_S := $(shell uname -s)
-    ifeq ($(UNAME_S),Darwin)
-        TOOLSPATH = /Applications/Arduino.app/Contents/Java/hardware/tools/
-    endif
-endif
-
-# path location for Teensy 3 core
 COREPATH = teensy3
-
-# path location for Arduino libraries
 LIBRARYPATH = libraries
+
+ARDUINOPATH = $(HOME)/arduino-1.6.9
+
+ifneq ($(strip $(ARDUINOPATH)),)
+    TOOLSPATH = $(ARDUINOPATH)/hardware/tools
+    COREPATH = $(ARDUINOPATH)/hardware/teensy/avr/cores/teensy3
+endif
 
 # path location for the arm-none-eabi compiler
 COMPILERPATH = $(TOOLSPATH)/arm/bin
