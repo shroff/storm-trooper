@@ -2,3 +2,5 @@
 *.d
 *.hex
 *.elf
+*.swp
+*.swo
