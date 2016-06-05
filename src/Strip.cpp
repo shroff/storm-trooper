@@ -1,4 +1,5 @@
 #include "Strip.h"
+#include "utils.h"
 
 Strip::Strip(int ledCount, int dataPin, int clockPin) {
   strip = LPD8806(ledCount, dataPin, clockPin);
@@ -12,25 +13,28 @@ void Strip::setColor(int r, int g, int b) {
   t_red = r & 0x7f;
   t_green = g & 0x7f;
   t_blue = b & 0x7f;
-  t_brightness = 0x80;
-  //Serial.printf("Setting Color: %d, %d, %d\n", t_red, t_green, t_blue);
+  anim_duration = 1000;
+  Serial.printf("Setting Color: %d, %d, %d\n", t_red, t_green, t_blue);
 }
 
-void Strip::setBrightness(int b) {
-  resetAnimation();
-  t_brightness = (b & 0x7f) + 1;
-  //Serial.printf("Setting Brightness: %d\n", t_brightness);
+void Strip::pulse(int r1, int g1, int b1, int r2, int g2, int b2, int duration) {
+  setColor(r1, g1, b1);
+  anim_duration = duration;
+  pulsing = true;
+  p_red = r2 & 0x7f;
+  p_green = g2 & 0x7f;
+  p_blue = b2 & 0x7f;
 }
 
 void Strip::resetAnimation() {
   s_red = c_red;
   s_green = c_green;
   s_blue = c_blue;
-  s_brightness = c_brightness;
   anim_start = millis();
   anim_next = anim_start + anim_step;
   anim_end = anim_start + anim_duration;
   animating = true;
+  pulsing = false;
 }
 
 void Strip::updateFrame() {
@@ -38,12 +42,24 @@ void Strip::updateFrame() {
     return;
   }
   unsigned long currentTime = millis();
+  if (pulsing && currentTime >= anim_end) {
+    Serial.printf("Swapping %d, %d, %d, %d, %d, %d, Duration: %d\n", s_red, s_green, s_blue, t_red, t_green, t_blue, anim_duration);
+    anim_start = anim_end;
+    anim_end += anim_duration;
+    s_red = t_red;
+    s_green = t_green;
+    s_blue = t_blue;
+    swap(t_red, p_red);
+    swap(t_green, p_green);
+    swap(t_blue, p_blue);
+  }
+
   if (currentTime >= anim_end) {
+    Serial.printf("Animation done%d, %d, %d\n", t_red, t_green, t_blue);
     animating = false;
     c_red = t_red;
     c_blue = t_blue;
     c_green = t_green;
-    c_brightness = t_brightness;
     updateStrip();
   } else if (currentTime > anim_next) {
     float interpolation = (currentTime - anim_start) * 1.0f / anim_duration;
@@ -51,16 +67,12 @@ void Strip::updateFrame() {
     c_red = s_red + (int)((t_red - s_red) * interpolation);
     c_green = s_green + (int)((t_green - s_green) * interpolation);
     c_blue = s_blue + (int)((t_blue - s_blue) * interpolation);
-    c_brightness = s_brightness + (int)((t_brightness - s_brightness) * interpolation);
     updateStrip();
   }
 }
 
 void Strip::updateStrip() {
-  int r = (c_red * c_brightness) >> 7;
-  int g = (c_green * c_brightness) >> 7;
-  int b = (c_blue * c_brightness) >> 7;
-  uint32_t color = strip.Color(r, g, b);
+  uint32_t color = strip.Color(c_red, c_green, c_blue);
   for (int i = 0; i < strip.numPixels(); i++) {
     strip.setPixelColor(i, color);
   }

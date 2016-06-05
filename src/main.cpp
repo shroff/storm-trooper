@@ -10,7 +10,7 @@ Strip strip = Strip(STRIP_LED_COUNT, STRIP_DATA_PIN, STRIP_CLOCK_PIN);
 
 const String CMD_TERMINATOR = "x";
 const String COLOR_CMD = "c";
-const String BRIGHTNESS_CMD = "b";
+const String PULSE_CMD = "p";
 CommandReader reader = CommandReader(&Serial1, CMD_TERMINATOR);
 
 void loop(void);
@@ -25,7 +25,6 @@ extern "C" int main(void)
   while (1) {
     loop();
     yield();
-
   }
 }
 
@@ -39,9 +38,9 @@ void processCommand(String cmd, String *args, int size) {
     if (validateArguments("set color", 3, size)) {
       strip.setColor(args[0].toInt(), args[1].toInt(), args[2].toInt());
     }
-  } else if (cmd == BRIGHTNESS_CMD) {
-    if (validateArguments("set brightness", 1, size)) {
-      strip.setBrightness(args[1].toInt());
+  } else if (cmd == PULSE_CMD) {
+    if (validateArguments("pulse", 7, size)) {
+      strip.pulse(args[0].toInt(), args[1].toInt(), args[2].toInt(), args[3].toInt(), args[4].toInt(), args[5].toInt(), args[6].toInt());
     }
   } else {
     Serial.println("Unrecognized command: ");
