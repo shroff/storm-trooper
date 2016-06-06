@@ -35,8 +35,8 @@ void loop() {
 
 void processCommand(String cmd, String *args, int size) {
   if (cmd == COLOR_CMD) {
-    if (validateArguments("set color", 3, size)) {
-      strip.setColor(args[0].toInt(), args[1].toInt(), args[2].toInt());
+    if (validateArguments("set color", 4, size)) {
+      strip.setColor(args[0].toInt(), args[1].toInt(), args[2].toInt(), args[3].toInt());
     }
   } else if (cmd == PULSE_CMD) {
     if (validateArguments("pulse", 7, size)) {

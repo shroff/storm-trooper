@@ -6,12 +6,12 @@
 class Strip {
   public:
     Strip(int, int, int);
-    void setColor(int, int, int);
+    void setColor(int, int, int, int);
     void pulse(int, int, int, int, int, int, int);
     void updateFrame();
 
   private:
-    void resetAnimation();
+    void resetAnimation(int);
     void updateStrip();
 
     LPD8806 strip;
