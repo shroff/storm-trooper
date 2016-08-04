@@ -1,16 +1,15 @@
 #include "Arduino.h"
-#include "Strip.h"
+#include "Component.h"
+#include "StripComponent.h"
 #include "CommandReader.h"
 
 // Number of RGB LEDs in strand:
 const int STRIP_LED_COUNT = 32;
 const int STRIP_DATA_PIN  = 2;
 const int STRIP_CLOCK_PIN = 3;
-Strip strip = Strip(STRIP_LED_COUNT, STRIP_DATA_PIN, STRIP_CLOCK_PIN);
+Component *stripComponent = new StripComponent(STRIP_LED_COUNT, STRIP_DATA_PIN, STRIP_CLOCK_PIN);
 
 const String CMD_TERMINATOR = "x";
-const String COLOR_CMD = "c";
-const String PULSE_CMD = "p";
 CommandReader reader = CommandReader(&Serial1, CMD_TERMINATOR);
 
 void loop(void);
@@ -30,34 +29,10 @@ extern "C" int main(void)
 
 void loop() {
   reader.read(&processCommand);
-  strip.updateFrame();
+  stripComponent->update();
 }
 
 void processCommand(String cmd, String *args, int size) {
-  if (cmd == COLOR_CMD) {
-    if (validateArguments("set color", 4, size)) {
-      strip.setColor(args[0].toInt(), args[1].toInt(), args[2].toInt(), args[3].toInt());
-    }
-  } else if (cmd == PULSE_CMD) {
-    if (validateArguments("pulse", 7, size)) {
-      strip.pulse(args[0].toInt(), args[1].toInt(), args[2].toInt(), args[3].toInt(), args[4].toInt(), args[5].toInt(), args[6].toInt());
-    }
-  } else {
-    Serial.println("Unrecognized command: ");
-    Serial.print(cmd);
-    for (int i = 0; i < size; i++) {
-      Serial.print(" ");
-      Serial.print(args[i]);
-    }
-    Serial.println();
-  }
+  stripComponent->processCommand(cmd, args, size);
 }
 
-bool validateArguments(String fn, int required, int given) {
-  if (given < required) {
-    Serial.println(fn);
-    Serial.printf("Insufficient arguments. Need %d, but given %d\n", required, given);
-    return false;
-  }
-  return true;
-}
