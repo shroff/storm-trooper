@@ -2,29 +2,24 @@
 #include "Component.h"
 #include "StripComponent.h"
 #include "CommandReader.h"
+#include "utils.h"
 
 #define CMD_TERMINATOR "x"
 #define NUM_COMPONENTS 1
 
-// Number of RGB LEDs in strand:
-const int STRIP_LED_COUNT = 32;
-const int STRIP_DATA_PIN  = 2;
-const int STRIP_CLOCK_PIN = 3;
-
 Component *components;
+void setupComponents() {
+  components = {
+    // DO NOT forget to update NUM_COMPONENTS
+    new StripComponent(32/*ledCount*/, 2/*dataPin*/, 3/*clockPin*/)
+  };
+}
 
 CommandReader reader = CommandReader(&Serial1, CMD_TERMINATOR);
 
 void loop(void);
 void processCommand(String, String *, int);
 bool validateArguments(String, int, int); 
-
-void setupComponents() {
-  components = {
-    // DO NOT forget to update NUM_COMPONENTS
-    new StripComponent(STRIP_LED_COUNT, STRIP_DATA_PIN, STRIP_CLOCK_PIN)
-  };
-}
 
 extern "C" int main(void)
 {
@@ -47,6 +42,9 @@ void loop() {
 }
 
 void processCommand(String cmd, String *args, int size) {
+  if (!validateArguments("process command", 2, size)) {
+    return;
+  }
   Serial.println("Command Received");
   if (cmd == "command") {
     int component = args[0].toInt();
