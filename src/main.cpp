@@ -2,20 +2,20 @@
 #include "Component.h"
 #include "StripComponent.h"
 #include "CommandReader.h"
+#include "Megaphone.h"
 #include "utils.h"
 
-#define CMD_TERMINATOR "x"
-#define NUM_COMPONENTS 1
 
-Component *components;
-void setupComponents() {
-  components = {
-    // DO NOT forget to update NUM_COMPONENTS
+Component* getComponents() {
+  return {
+#define NUM_COMPONENTS 1
     new StripComponent(32/*ledCount*/, 2/*dataPin*/, 3/*clockPin*/)
   };
 }
 
-CommandReader reader = CommandReader(&Serial1, CMD_TERMINATOR);
+Component *components;
+Megaphone *megaphone;
+CommandReader *reader;
 
 void loop(void);
 void processCommand(String, String *, int);
@@ -26,7 +26,9 @@ extern "C" int main(void)
 	Serial.begin(9600);
   Serial1.begin(9600);
 
-  setupComponents();
+  components = getComponents();
+  megaphone = new Megaphone(components, NUM_COMPONENTS);
+  reader = new CommandReader(&Serial1, "x");
 
   while (1) {
     loop();
@@ -35,7 +37,8 @@ extern "C" int main(void)
 }
 
 void loop() {
-  reader.read(&processCommand);
+  reader->read(&processCommand);
+  megaphone->shout();
   for (int i = 0; i < NUM_COMPONENTS; i++) {
     components[i].update();
   }
