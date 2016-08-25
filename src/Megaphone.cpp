@@ -2,11 +2,14 @@
 
 Megaphone::Megaphone(Component *components, int size) {
   lastShoutTimeMillis = 0;
+  description = "";
+  description += char(0x7f);
   for (int i = 0; i < size; i++) {
-    if (i != 0) {
-      description += " ";
-    }
-    description += String(components[i].getComponentType());
+    description += char(components[i].getComponentType() & 0xff);
+  }
+  Serial.print("Megaphone");
+  for (int i = 0; i < description.length(); i++) {
+    Serial.println(description.charAt(i), DEC);
   }
 }
 
@@ -16,7 +19,6 @@ void Megaphone::shout() {
     return;
   }
   lastShoutTimeMillis = time;
-  Serial.print("Description: ");
-  Serial.println(description);
+  Serial.print("Description");
   Serial1.print(description);
 }
