@@ -11,11 +11,11 @@ StripComponent::StripComponent(int ledCount, int dataPin, int clockPin) {
 void StripComponent::processCommand(String cmd, String *args, int size) {
   if (cmd == COLOR_CMD) {
     if (validateArguments("set color", 4, size)) {
-      strip->setColor(args[0].toInt(), args[1].toInt(), args[2].toInt(), args[3].toInt());
+      strip->setColor(args[0].toInt() >> 1, args[1].toInt() >> 1, args[2].toInt() >> 1, args[3].toInt());
     }
   } else if (cmd == PULSE_CMD) {
     if (validateArguments("pulse", 7, size)) {
-      strip->pulse(args[0].toInt(), args[1].toInt(), args[2].toInt(), args[3].toInt(), args[4].toInt(), args[5].toInt(), args[6].toInt());
+      strip->pulse(args[0].toInt() >> 1, args[1].toInt() >> 1, args[2].toInt() >> 1, args[3].toInt() >> 1, args[4].toInt() >> 1, args[5].toInt() >> 1, args[6].toInt());
     }
   } else {
     Serial.println("Unrecognized command: ");
