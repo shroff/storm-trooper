@@ -1,13 +1,13 @@
-#include "CommandReader.h"
+#include "Stormio.h"
 
-CommandReader::CommandReader(HardwareSerial *serial, String terminator) {
+Stormio::Stormio(HardwareSerial *serial, String terminator) {
   this->serial = serial;
   this->terminator = terminator;
 }
 
-void CommandReader::read(void (*processCommand)(String, String *, int)) {
-  if (Serial1.available() > 0) {
-    char c = Serial1.read();
+void Stormio::read(void (*processCommand)(String, String *, int)) {
+  if (serial->available() > 0) {
+    char c = serial->read();
     if (c == ' ' || c == '\n' || c == '\r') {
       if (command.length() > 0) {
         if (command == terminator) {
@@ -28,4 +28,19 @@ void CommandReader::read(void (*processCommand)(String, String *, int)) {
       command += c;
     }
   }
+}
+
+void Stormio::write(unsigned char type, String data) {
+  unsigned char length = data.length();
+  unsigned char checksum = type;
+  checksum += length;
+  for (int i = data.length() - 1; i >= 0; i--) {
+    checksum += data.charAt(i);
+  }
+  checksum = ~checksum;
+  serial->write(checksum);
+  serial->write(type);
+  serial->write(length);
+  serial->print(data);
+  serial->flush();
 }

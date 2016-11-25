@@ -7,7 +7,6 @@ Strip::Strip(int ledCount, int dataPin, int clockPin) {
   strip.show();
 }
 
-
 void Strip::setColor(int r, int g, int b, int duration) {
   resetAnimation(duration);
   t_red = r & 0x7f;

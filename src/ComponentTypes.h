@@ -2,7 +2,8 @@
 #define __component_types_h_
 
 #define UNKNOWN 0
-#define RGB_LED 1
+#define RGB 1
+#define DIMMABLE 2
 
 #endif
 

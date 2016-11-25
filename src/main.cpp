@@ -1,7 +1,8 @@
 #include "Arduino.h"
 #include "Component.h"
 #include "StripComponent.h"
-#include "CommandReader.h"
+#include "SimpleLightComponent.h"
+#include "Stormio.h"
 #include "Megaphone.h"
 #include "utils.h"
 
@@ -9,13 +10,14 @@
 Component* getComponents() {
   return {
 #define NUM_COMPONENTS 1
-    new StripComponent(32/*ledCount*/, 2/*dataPin*/, 3/*clockPin*/)
+    //new StripComponent(32/*ledCount*/, 2/*dataPin*/, 3/*clockPin*/)
+    new SimpleLightComponent(3/*pwmPin*/)
   };
 }
 
 Component *components;
 Megaphone *megaphone;
-CommandReader *reader;
+Stormio *stormio;
 
 void loop(void);
 void processCommand(String, String *, int);
@@ -27,8 +29,8 @@ extern "C" int main(void)
   Serial1.begin(9600);
 
   components = getComponents();
-  megaphone = new Megaphone(components, NUM_COMPONENTS);
-  reader = new CommandReader(&Serial1, "x");
+  stormio = new Stormio(&Serial1, "x");
+  megaphone = new Megaphone(stormio, components, NUM_COMPONENTS);
 
   while (1) {
     loop();
@@ -37,7 +39,7 @@ extern "C" int main(void)
 }
 
 void loop() {
-  reader->read(&processCommand);
+  stormio->read(&processCommand);
   megaphone->shout();
   for (int i = 0; i < NUM_COMPONENTS; i++) {
     components[i].update();

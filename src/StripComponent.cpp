@@ -33,5 +33,5 @@ void StripComponent::update() {
 }
 
 int StripComponent::getComponentType() {
-  return RGB_LED;
+  return RGB;
 }
