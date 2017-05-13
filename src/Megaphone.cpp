@@ -12,7 +12,7 @@ Megaphone::Megaphone(Stormio *stormio, Component *components, char size) {
     description += char(components[i].getComponentType() & 0xff);
   }
 
-  for (int i = 0; i < description.length(); i++) {
+  for (unsigned int i = 0; i < description.length(); i++) {
     Serial.println(description.charAt(i), DEC);
   }
 }
