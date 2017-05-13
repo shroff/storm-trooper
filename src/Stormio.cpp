@@ -3,6 +3,7 @@
 Stormio::Stormio(HardwareSerial *serial, String terminator) {
   this->serial = serial;
   this->terminator = terminator;
+  this->cmdIndex = 0;
 }
 
 void Stormio::read(void (*processCommand)(String, String *, int)) {

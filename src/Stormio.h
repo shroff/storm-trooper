@@ -3,7 +3,7 @@
 
 #include "Arduino.h"
 
-const int CMD_SIZE = 16;
+#define CMD_SIZE 16
 
 class Stormio {
   public:
